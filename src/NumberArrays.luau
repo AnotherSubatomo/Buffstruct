@@ -9,7 +9,38 @@
 
 --!native
 
-export type PossibleTypes = string | table | number
+export type PossibleTypes = string | number | {number}
+type IntTypes = 'u8' | 'u16' | 'u32' | 'i8' | 'i16' | 'i32'
+type Writer = (buffer, number, number) -> ()
+
+local WRITERS : {[IntTypes]: Writer} = {
+	u8 = buffer.writeu8,
+	u16 = buffer.writeu16,
+	u32 = buffer.writeu32,
+	i8 = buffer.writei8,
+	i16 = buffer.writei16,
+	i32 = buffer.writei32
+}
+
+local BYTESIZE : {[IntTypes]: number} = {
+	u8 = 1, u16 = 2, u32 = 4,
+	i8 = 1, i16 = 2, i32 = 4
+}
+
+local function turnToBuffer(v: PossibleTypes, type: IntTypes) : buffer
+	local vtype: string, src: buffer? = typeof(v), nil
+	local writer: Writer, readsize: number = WRITERS[type], BYTESIZE[type]
+
+	if vtype == 'number' then src = buffer.create(v :: number)
+	elseif vtype == 'string' then src = buffer.fromstring(v :: string)
+	elseif vtype == 'table' then
+		v = v :: {number}
+		src = buffer.create((#v)*readsize)
+		for i = 0, (#v)-1 do writer(src, i*readsize, v[i+1]) end
+	end
+
+	return src :: buffer
+end
 
 local function assertNumber(v: number?)
 	assert(typeof(v) == 'number', "Buffer access index / value must be a number.")
@@ -112,13 +143,7 @@ local Int32_mt = {
 
 -- Array constructor functions
 function Uint8Array(v: PossibleTypes)
-	local vtype, src = typeof(v)
-	if vtype == 'number' then src = buffer.create(v)
-	elseif vtype == 'string' then src = buffer.fromstring(v)
-	elseif vtype == 'table' then
-		src = buffer.create(#v)
-		for i = 0, #v-1 do buffer.writeu8(src, i, v[i+1]) end
-	end
+	local src = turnToBuffer(v, 'u8')
 	return setmetatable({
 			__src = src,
 			__lim = buffer.len(src)
@@ -126,13 +151,7 @@ function Uint8Array(v: PossibleTypes)
 end
 
 function Uint16Array(v: PossibleTypes)
-	local vtype, src = typeof(v)
-	if vtype == 'number' then src = buffer.create(v)
-	elseif vtype == 'string' then src = buffer.fromstring(v)
-	elseif vtype == 'table' then
-		src = buffer.create(#v*2)
-		for i = 0, #v-1 do buffer.writeu16(src, i*2, v[i+1]) end
-	end
+	local src = turnToBuffer(v, 'u16')
 	return setmetatable({
 			__src = src,
 			__lim = buffer.len(src) / 2
@@ -140,13 +159,7 @@ function Uint16Array(v: PossibleTypes)
 end
 
 function Uint32Array(v: PossibleTypes)
-	local vtype, src = typeof(v)
-	if vtype == 'number' then src = buffer.create(v)
-	elseif vtype == 'string' then src = buffer.fromstring(v)
-	elseif vtype == 'table' then
-		src = buffer.create(#v*4)
-		for i = 0, #v-1 do buffer.writeu32(src, i*4, v[i+1]) end
-	end
+	local src = turnToBuffer(v, 'u32')
 	return setmetatable({
 			__src = src,
 			__lim = buffer.len(src) / 4
@@ -154,13 +167,7 @@ function Uint32Array(v: PossibleTypes)
 end
 
 function Int8Array(v: PossibleTypes)
-	local vtype, src = typeof(v)
-	if vtype == 'number' then src = buffer.create(v)
-	elseif vtype == 'string' then src = buffer.fromstring(v)
-	elseif vtype == 'table' then
-		src = buffer.create(#v)
-		for i = 0, #v-1 do buffer.writei8(src, i, v[i+1]) end
-	end
+	local src = turnToBuffer(v, 'i8')
 	return setmetatable({
 			__src = src,
 			__lim = buffer.len(src)
@@ -168,13 +175,7 @@ function Int8Array(v: PossibleTypes)
 end
 
 function Int16Array(v: PossibleTypes)
-	local vtype, src = typeof(v)
-	if vtype == 'number' then src = buffer.create(v)
-	elseif vtype == 'string' then src = buffer.fromstring(v)
-	elseif vtype == 'table' then
-		src = buffer.create(#v*2)
-		for i = 0, #v-1 do buffer.writei16(src, i*2, v[i+1]) end
-	end
+	local src = turnToBuffer(v, 'i16')
 	return setmetatable({
 			__src = src,
 			__lim = buffer.len(src) / 2
@@ -182,13 +183,7 @@ function Int16Array(v: PossibleTypes)
 end
 
 function Int32Array(v: PossibleTypes)
-	local vtype, src = typeof(v)
-	if vtype == 'number' then src = buffer.create(v)
-	elseif vtype == 'string' then src = buffer.fromstring(v)
-	elseif vtype == 'table' then
-		src = buffer.create(#v*4)
-		for i = 0, #v-1 do buffer.writei32(src, i*4, v[i+1]) end
-	end
+	local src = turnToBuffer(v, 'i32')
 	return setmetatable({
 			__src = src,
 			__lim = buffer.len(src) / 4
