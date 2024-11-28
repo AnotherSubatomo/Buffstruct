@@ -16,6 +16,8 @@ This repository is the culmination of "working with large data too often" and "b
 
 There are zero dependencies and each file is independent from one another; making usage just one drag-and-drop away.
 
+Contributions, reports, and feedbacks are always welcome. :)
+
 ### Usage
 The following will discuss and explain the structure and how to use them.
 
