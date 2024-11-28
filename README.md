@@ -10,6 +10,12 @@ Common data structures reimplemented with Luau buffers for better memory managem
 
 ---
 
+### About
+
+This repository is the culmination of "working with large data too often" and "becoming paranoid of memory usage."
+
+There are zero dependencies and each file is independent from one another; making usage just one drag-and-drop away.
+
 ### Usage
 The following will discuss and explain the structure and how to use them.
 
@@ -61,7 +67,7 @@ local IOBuffer = require("path/IOBuffer")
 local Sample = IOBuffer.fromString("Strawberry Fields Forever!")
 ```
 
-and... y'know what, I'll just let the code sample speak for itself.
+...and use it to work with data just like the following:
 ```lua
 -- ...
 print(Sample:readu8())      --> 83; the codepoint of "S"
@@ -72,7 +78,32 @@ print(Sample:readString(6)) --> "Fields"
 -- ...
 ```
 
-This object has a lot more methods, which you can learn more about (and even better) just by reading the source code.
+This object has a lot more methods but I'm too lazy to talk about all of them right here. You can learn more (and even better) about how you can use these objects just by reading the source code.
+
+#### IOBitBuffer
+**Work in progress;** *Floats and write operations are currently not supported / implemented.*
+
+The IOBitBuffer object is just like the IOBuffer object, but instead of working on a per byte basis, it works with the constituent bits itself.
+
+Just like IOBuffers, they are incredibly (and only) useful in scenarios that require efficient, intermediate storage for sequential read/write operations on **tightly packed and compressed data** such as codecs and network operations.
+
+Here is an example on how to make a new, and use an IOBitBuffer:
+```lua
+local IOBitBuffer = require("path/IOBitBuffer")
+
+local Sample = IOBitBuffer.fromString('\x36\x64\xA7\x4E\x59\x8D')
+
+local function Decode(Bitstream: typeof(IOBitBuffer))
+	local ChunkType = Bitstream:readBits(2)
+	local CompressionMethod = Bitstream:readBits(2)
+	local BitDepth = Bitstream:readBits(4)
+	local ChunkLength = Bitstream:readBits(8)
+	-- ... Decode data
+	return DecodedData
+end
+
+local DecodedData = Decode(Sample)
+```
 
 ---
 
