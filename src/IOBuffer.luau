@@ -6,9 +6,9 @@
 	
 	* Floats are currently not supported.
 
-	Author:						@AnotherSubatomo (GitHub)
-	File Creation:				25/11/2024 - 11:30 AM
-	SPDX-License-Identifier:	MIT
+	Author:                     @AnotherSubatomo (GitHub)
+	File Creation:              25/11/2024 - 11:30 AM
+	SPDX-License-Identifier:    MIT
 ]=]
 
 --!native
@@ -234,6 +234,19 @@ end
 
 function Buffer:writei32BE(value: number) : number
 	self:writei32LE(swapEndianness32(value, 4))
+end
+
+-- Disposes the IOBuffer object and returns the internal buffer.
+function Buffer:close() : buffer
+	local buff = self.src
+	setmetatable(self, nil)
+	self.src = nil
+	self.pos = nil
+	self.floor = nil
+	self.ceil = nil
+	self._mark = nil
+	self = nil
+	return buff
 end
 
 return Buffer
