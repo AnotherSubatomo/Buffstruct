@@ -2,9 +2,10 @@
 --[=[
 	buffstruct/NumberArrays
 	JS's signed-sized-arrays reimplemented in pure Luau with buffers.
-	Author:						@AnotherSubatomo (GitHub)
-	File Creation:				27/11/2024 - 1:00 PM
-	SPDX-License-Identifier:	MIT
+	
+	Author:                     @AnotherSubatomo (GitHub)
+	File Creation:              27/11/2024 - 1:00 PM
+	SPDX-License-Identifier:    MIT
 ]=]
 
 --!native
