@@ -31,7 +31,7 @@ function BitBuffer._new(src: buffer, byte_offset: number?, segment_size: number?
 	byte_offset = byte_offset or 0
 	local buff_len = blen(src)
 	local extent = segment_size or buff_len - byte_offset
-	argue(byte_offset + extent < buff_len, ERRORS[3])
+	argue(byte_offset + extent <= buff_len, ERRORS[3])
 
 	local self = setmetatable({}, BitBuffer)
 	self._src = src

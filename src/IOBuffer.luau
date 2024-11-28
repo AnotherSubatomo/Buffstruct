@@ -124,6 +124,7 @@ function Buffer:rewind()
 end
 
 -- ----------[=[ READ FUNCTIONS ]=]----------
+
 function Buffer:readu8() : number
 	local value = readu8(self.src, self.pos)
 	self.pos += 1
@@ -184,6 +185,7 @@ function Buffer:readi32BE() : number
 end
 
 -- ----------[=[ WRITE FUNCTIONS ]=]----------
+
 function Buffer:writeu8(value: number)
 	writeu8(self.src, self.pos, value)
 	self.pos += 1
